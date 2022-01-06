@@ -1,17 +1,24 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 pub struct Cart<'a> {
     regions: HashMap<&'a str, f32>,
+    products: HashMap<&'a str, rustacart::Product<'a>>,
 }
 
-struct Region<'a> {
-    name: &'a str,
-    price: f32,
-}
+// struct Region<'a> {
+//     name: &'a str,
+//     price: f32,
+// }
 
 trait RegionState<'a> {
     fn add_region(&mut self, name: &'a str, price: f32) -> ();
     fn count_regions(&self) -> usize;
+}
+
+trait ProductState<'a> {
+    fn add_product(&mut self, name: &'a str, price: f32) -> ();
+    fn count_products(&self) -> usize;
 }
 
 impl<'a> RegionState<'a> for Cart<'a> {
@@ -20,7 +27,18 @@ impl<'a> RegionState<'a> for Cart<'a> {
     }
 
     fn count_regions(&self) -> usize {
-        return self.regions.len()
+        return self.regions.len();
+    }
+}
+
+impl<'a> ProductState<'a> for Cart<'a> {
+    fn add_product(&mut self, name: &'a str, price: f32) -> () {
+        self.products
+            .insert(name, rustacart::Product { name, price });
+    }
+
+    fn count_products(&self) -> usize {
+        return self.products.len();
     }
 }
 
@@ -36,15 +54,12 @@ mod rustacart {
         pub percentage: i32,
     }
 
-    // pub struct Shipping {
-    //     region: Region
-    // }
-
     #[must_use = "must invoke to yield Cart struct"]
     pub fn new<'a>() -> Cart<'a> {
         let regions: HashMap<&str, f32> = HashMap::new();
+        let products: HashMap<&str, Product> = HashMap::new();
 
-        return Cart { regions };
+        return Cart { regions, products };
     }
 }
 
@@ -55,7 +70,7 @@ mod tests {
     #[test]
     fn it_can_create_a_product() {
         let name = String::from("Lego London Bus");
-        let price = 149.99;
+        let price = 109.99;
 
         let product = rustacart::Product { name: &name, price };
         assert_eq!(product.name, name);
@@ -74,8 +89,17 @@ mod tests {
         let mut cart = rustacart::new();
         cart.add_region("United Kingdom", 5.99);
         cart.add_region("Northern Ireland", 7.99);
-        cart.add_region("Europe", 11.99);
+        cart.add_region("Europen Union", 11.99);
 
         assert_eq!(cart.count_regions(), 3)
+    }
+
+    #[test]
+    fn it_can_add_products() {
+        let mut cart = rustacart::new();
+        cart.add_product("Lego London Bus", 109.99);
+        cart.add_product("Lego Boutique Hotel", 174.99);
+
+        assert_eq!(cart.count_products(), 2)
     }
 }
