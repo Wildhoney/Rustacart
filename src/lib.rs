@@ -1,29 +1,35 @@
 mod rustacart {
     use std::ops;
 
+    #[derive(Debug)]
     pub struct Product<'a> {
         pub name: &'a str,
         pub price: f32,
     }
 
+    #[derive(Debug)]
     pub struct Region<'a> {
         pub name: &'a str,
         pub price: f32,
     }
 
+    #[derive(Debug)]
     pub struct VAT {
         pub percentage: i32,
     }
 
-    pub struct Total {
+    #[derive(Debug)]
+    pub struct Basket {
+        pub items: Vec<String>,
         pub price: f32,
     }
 
     impl<'a> ops::Add<Product<'a>> for Product<'a> {
-        type Output = Total;
+        type Output = Basket;
 
-        fn add(self, rhs: Product) -> Total {
-            return Total {
+        fn add(self, rhs: Product) -> Basket {
+            return Basket {
+                items: vec![self.name.to_owned(), rhs.name.to_owned()],
                 price: self.price + rhs.price,
             };
         }
@@ -95,5 +101,6 @@ mod tests {
 
         let basket = london_bus + boutique_hotel;
         assert_eq!(basket.price, 284.98);
+        assert_eq!(basket.items, vec!["Lego London Bus", "Lego Boutique Hotel"]);
     }
 }
