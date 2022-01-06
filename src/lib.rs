@@ -1,50 +1,4 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
-
-pub struct Cart<'a> {
-    regions: HashMap<&'a str, rustacart::Region<'a>>,
-    products: HashMap<&'a str, rustacart::Product<'a>>,
-}
-
-// struct Region<'a> {
-//     name: &'a str,
-//     price: f32,
-// }
-
-trait RegionState<'a> {
-    fn add_region(&mut self, name: &'a str, price: f32) -> ();
-    fn count_regions(&self) -> usize;
-}
-
-trait ProductState<'a> {
-    fn add_product(&mut self, name: &'a str, price: f32) -> ();
-    fn count_products(&self) -> usize;
-}
-
-impl<'a> RegionState<'a> for Cart<'a> {
-    fn add_region(&mut self, name: &'a str, price: f32) -> () {
-        self.regions.insert(name, rustacart::Region { name, price });
-    }
-
-    fn count_regions(&self) -> usize {
-        return self.regions.len();
-    }
-}
-
-impl<'a> ProductState<'a> for Cart<'a> {
-    fn add_product(&mut self, name: &'a str, price: f32) -> () {
-        self.products
-            .insert(name, rustacart::Product { name, price });
-    }
-
-    fn count_products(&self) -> usize {
-        return self.products.len();
-    }
-}
-
 mod rustacart {
-    use super::*;
-
     pub struct Product<'a> {
         pub name: &'a str,
         pub price: f32,
@@ -58,14 +12,6 @@ mod rustacart {
     pub struct VAT {
         pub percentage: i32,
     }
-
-    #[must_use = "must invoke to yield Cart struct"]
-    pub fn new<'a>() -> Cart<'a> {
-        let regions: HashMap<&str, Region> = HashMap::new();
-        let products: HashMap<&str, Product> = HashMap::new();
-
-        return Cart { regions, products };
-    }
 }
 
 #[cfg(test)]
@@ -73,38 +19,36 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_can_create_a_product() {
-        let name = String::from("Lego London Bus");
-        let price = 109.99;
+    fn it_can_create_products() {
 
-        let product = rustacart::Product { name: &name, price };
-        assert_eq!(product.name, name);
-        assert_eq!(product.price, price);
+        let london_bus = rustacart::Product { name: "Lego London Bus", price: 109.99 };
+        assert_eq!(london_bus.name, "Lego London Bus");
+        assert_eq!(london_bus.price, 109.99);
+
+        let boutique_hotel = rustacart::Product { name: "Lego Boutique Hotel", price: 174.99 };
+        assert_eq!(boutique_hotel.name, "Lego Boutique Hotel");
+        assert_eq!(boutique_hotel.price, 174.99);
     }
 
     #[test]
-    fn it_can_configure_the_vat() {
+    fn it_can_create_vat() {
         let percentage = 15;
         let vat = rustacart::VAT { percentage };
         assert_eq!(vat.percentage, percentage);
     }
 
     #[test]
-    fn it_can_add_regions() {
-        let mut cart = rustacart::new();
-        cart.add_region("United Kingdom", 5.99);
-        cart.add_region("Northern Ireland", 7.99);
-        cart.add_region("Europen Union", 11.99);
+    fn it_can_create_regions() {
+        let united_kingdom = rustacart::Region { name: "United Kingdom", price: 5.99 };
+        assert_eq!(united_kingdom.name, "United Kingdom");
+        assert_eq!(united_kingdom.price, 5.99);
 
-        assert_eq!(cart.count_regions(), 3)
-    }
+        let northern_ireland = rustacart::Region { name: "Northern Ireland", price: 7.99 };
+        assert_eq!(northern_ireland.name, "Northern Ireland");
+        assert_eq!(northern_ireland.price, 7.99);
 
-    #[test]
-    fn it_can_add_products() {
-        let mut cart = rustacart::new();
-        cart.add_product("Lego London Bus", 109.99);
-        cart.add_product("Lego Boutique Hotel", 174.99);
-
-        assert_eq!(cart.count_products(), 2)
+        let european_union = rustacart::Region { name: "European Union", price: 11.99 };
+        assert_eq!(european_union.name, "European Union");
+        assert_eq!(european_union.price, 11.99);
     }
 }
