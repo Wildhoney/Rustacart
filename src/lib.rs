@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 
 pub struct Cart<'a> {
-    regions: HashMap<&'a str, f32>,
+    regions: HashMap<&'a str, rustacart::Region<'a>>,
     products: HashMap<&'a str, rustacart::Product<'a>>,
 }
 
@@ -23,7 +23,7 @@ trait ProductState<'a> {
 
 impl<'a> RegionState<'a> for Cart<'a> {
     fn add_region(&mut self, name: &'a str, price: f32) -> () {
-        self.regions.insert(name, price);
+        self.regions.insert(name, rustacart::Region { name, price });
     }
 
     fn count_regions(&self) -> usize {
@@ -50,13 +50,18 @@ mod rustacart {
         pub price: f32,
     }
 
+    pub struct Region<'a> {
+        pub name: &'a str,
+        pub price: f32,
+    }
+
     pub struct VAT {
         pub percentage: i32,
     }
 
     #[must_use = "must invoke to yield Cart struct"]
     pub fn new<'a>() -> Cart<'a> {
-        let regions: HashMap<&str, f32> = HashMap::new();
+        let regions: HashMap<&str, Region> = HashMap::new();
         let products: HashMap<&str, Product> = HashMap::new();
 
         return Cart { regions, products };
