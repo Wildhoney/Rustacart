@@ -1,9 +1,6 @@
-
-
-
 mod rustacart {
     use std::ops;
-    
+
     pub struct Product<'a> {
         pub name: &'a str,
         pub price: f32,
@@ -19,14 +16,16 @@ mod rustacart {
     }
 
     pub struct Total {
-        pub price: f32
+        pub price: f32,
     }
 
-    impl <'a> ops::Add<Product<'a>> for Product<'a> {
+    impl<'a> ops::Add<Product<'a>> for Product<'a> {
         type Output = Total;
-    
+
         fn add(self, rhs: Product) -> Total {
-            return Total { price: self.price + rhs.price };
+            return Total {
+                price: self.price + rhs.price,
+            };
         }
     }
 }
@@ -37,12 +36,17 @@ mod tests {
 
     #[test]
     fn it_can_create_products() {
-
-        let london_bus = rustacart::Product { name: "Lego London Bus", price: 109.99 };
+        let london_bus = rustacart::Product {
+            name: "Lego London Bus",
+            price: 109.99,
+        };
         assert_eq!(london_bus.name, "Lego London Bus");
         assert_eq!(london_bus.price, 109.99);
 
-        let boutique_hotel = rustacart::Product { name: "Lego Boutique Hotel", price: 174.99 };
+        let boutique_hotel = rustacart::Product {
+            name: "Lego Boutique Hotel",
+            price: 174.99,
+        };
         assert_eq!(boutique_hotel.name, "Lego Boutique Hotel");
         assert_eq!(boutique_hotel.price, 174.99);
     }
@@ -56,25 +60,40 @@ mod tests {
 
     #[test]
     fn it_can_create_regions() {
-        let united_kingdom = rustacart::Region { name: "United Kingdom", price: 5.99 };
+        let united_kingdom = rustacart::Region {
+            name: "United Kingdom",
+            price: 5.99,
+        };
         assert_eq!(united_kingdom.name, "United Kingdom");
         assert_eq!(united_kingdom.price, 5.99);
 
-        let northern_ireland = rustacart::Region { name: "Northern Ireland", price: 7.99 };
+        let northern_ireland = rustacart::Region {
+            name: "Northern Ireland",
+            price: 7.99,
+        };
         assert_eq!(northern_ireland.name, "Northern Ireland");
         assert_eq!(northern_ireland.price, 7.99);
 
-        let european_union = rustacart::Region { name: "European Union", price: 11.99 };
+        let european_union = rustacart::Region {
+            name: "European Union",
+            price: 11.99,
+        };
         assert_eq!(european_union.name, "European Union");
         assert_eq!(european_union.price, 11.99);
     }
 
     #[test]
     fn it_can_add_products_together() {
-        let london_bus = rustacart::Product { name: "Lego London Bus", price: 109.99 };
-        let boutique_hotel = rustacart::Product { name: "Lego Boutique Hotel", price: 174.99 };
+        let london_bus = rustacart::Product {
+            name: "Lego London Bus",
+            price: 109.99,
+        };
+        let boutique_hotel = rustacart::Product {
+            name: "Lego Boutique Hotel",
+            price: 174.99,
+        };
 
-        let cart = london_bus + boutique_hotel;
-        assert_eq!(cart.price, 284.98);
+        let basket = london_bus + boutique_hotel;
+        assert_eq!(basket.price, 284.98);
     }
 }
