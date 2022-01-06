@@ -1,4 +1,9 @@
+
+
+
 mod rustacart {
+    use std::ops;
+    
     pub struct Product<'a> {
         pub name: &'a str,
         pub price: f32,
@@ -11,6 +16,18 @@ mod rustacart {
 
     pub struct VAT {
         pub percentage: i32,
+    }
+
+    pub struct Total {
+        pub price: f32
+    }
+
+    impl <'a> ops::Add<Product<'a>> for Product<'a> {
+        type Output = Total;
+    
+        fn add(self, rhs: Product) -> Total {
+            return Total { price: self.price + rhs.price };
+        }
     }
 }
 
@@ -50,5 +67,14 @@ mod tests {
         let european_union = rustacart::Region { name: "European Union", price: 11.99 };
         assert_eq!(european_union.name, "European Union");
         assert_eq!(european_union.price, 11.99);
+    }
+
+    #[test]
+    fn it_can_add_products_together() {
+        let london_bus = rustacart::Product { name: "Lego London Bus", price: 109.99 };
+        let boutique_hotel = rustacart::Product { name: "Lego Boutique Hotel", price: 174.99 };
+
+        let cart = london_bus + boutique_hotel;
+        assert_eq!(cart.price, 284.98);
     }
 }
