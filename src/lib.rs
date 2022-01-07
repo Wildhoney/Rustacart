@@ -65,12 +65,10 @@ mod rustacart {
             let mut items = self.items.clone();
             items.push(name);
 
-            let vat = (self.price) * rhs.percentage / 100.0;
-
             return Basket {
                 items,
                 region: self.region,
-                price: self.price + vat,
+                price: self.price + (self.price * rhs.percentage / 100.0),
             };
         }
     }
@@ -167,7 +165,7 @@ mod tests {
     }
 
     #[test]
-    fn it_can_add_products_and_shipping_and_vat_together() {
+    fn it_can_add_products_shipping_and_vat_together() {
         let london_bus = rustacart::Product {
             name: "Lego London Bus",
             price: 109.99,
