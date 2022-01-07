@@ -19,14 +19,14 @@ mod rustacart {
     }
 
     #[derive(Debug)]
-    pub struct Basket {
+    pub struct Basket<'a> {
         pub items: Vec<String>,
-        pub region:Option<String>,
+        pub region: Option<&'a str>,
         pub price: f32,
     }
 
     impl<'a> ops::Add<Product<'a>> for Product<'a> {
-        type Output = Basket;
+        type Output = Basket<'a>;
 
         fn add(self: Product<'a>, rhs: Product<'a>) -> Basket {
             return Basket {
@@ -37,29 +37,29 @@ mod rustacart {
         }
     }
 
-    impl<'a> ops::Add<Region<'a>> for Basket {
-        type Output = Basket;
+    impl<'a> ops::Add<Region<'a>> for Basket<'a> {
+        type Output = Basket<'a>;
 
-        fn add(self: Basket, rhs: Region<'a>) -> Basket {
+        fn add(self: Basket<'a>, rhs: Region<'a>) -> Basket<'a> {
             let name = format!("Shipping to {}", rhs.name);
             let mut items = self.items.clone();
             items.push(name);
 
             return Basket {
                 items,
-                region: Some(String::from(rhs.name)),
+                region: Some(rhs.name),
                 price: self.price + rhs.price,
             };
         }
     }
 
-    impl<'a> ops::Rem<VAT> for Basket {
-        type Output = Basket;
+    impl<'a> ops::Rem<VAT> for Basket<'a> {
+        type Output = Basket<'a>;
 
-        fn rem(self: Basket, rhs: VAT) -> Basket {
+        fn rem(self: Basket<'a>, rhs: VAT) -> Basket<'a> {
             let name = match self.region {
                 Some(ref name) => format!("VAT for {} at {}%", name, rhs.percentage),
-                None => format!("VAT at {}%", rhs.percentage)
+                None => format!("VAT at {}%", rhs.percentage),
             };
 
             let mut items = self.items.clone();
@@ -160,8 +160,15 @@ mod tests {
 
         let basket = london_bus + boutique_hotel + united_kingdom;
         assert_eq!(basket.price, 290.97);
-        assert_eq!(basket.region, Some(String::from("United Kingdom")));
-        assert_eq!(basket.items, vec!["Lego London Bus", "Lego Boutique Hotel", "Shipping to United Kingdom"]);
+        assert_eq!(basket.region, Some("United Kingdom"));
+        assert_eq!(
+            basket.items,
+            vec![
+                "Lego London Bus",
+                "Lego Boutique Hotel",
+                "Shipping to United Kingdom"
+            ]
+        );
     }
 
     #[test]
@@ -182,7 +189,15 @@ mod tests {
 
         let basket = (london_bus + boutique_hotel + united_kingdom) % vat;
         assert_eq!(basket.price, 334.6155);
-        assert_eq!(basket.region, Some(String::from("United Kingdom")));
-        assert_eq!(basket.items, vec!["Lego London Bus", "Lego Boutique Hotel", "Shipping to United Kingdom", "VAT for United Kingdom at 15%"]);
+        assert_eq!(basket.region, Some("United Kingdom"));
+        assert_eq!(
+            basket.items,
+            vec![
+                "Lego London Bus",
+                "Lego Boutique Hotel",
+                "Shipping to United Kingdom",
+                "VAT for United Kingdom at 15%"
+            ]
+        );
     }
 }
