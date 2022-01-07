@@ -19,17 +19,17 @@ mod rustacart {
     }
 
     #[derive(Debug)]
-    pub struct Basket {
-        pub items: Vec<String>,
+    pub struct Basket<'a> {
+        pub items: Vec<&'a str>,
         pub price: f32,
     }
 
     impl<'a> ops::Add<Product<'a>> for Product<'a> {
-        type Output = Basket;
+        type Output = Basket<'a>;
 
-        fn add(self, rhs: Product) -> Basket {
+        fn add(self: Product<'a>, rhs: Product<'a>) -> Basket {
             return Basket {
-                items: vec![self.name.to_owned(), rhs.name.to_owned()],
+                items: vec![self.name, rhs.name],
                 price: self.price + rhs.price,
             };
         }
